@@ -6,6 +6,8 @@ public class Tiro : NetworkBehaviour {
 
 	float vel_tiro = 1.0f;
 	public int tiro_id;
+	public int dano = 10;
+	public int pontos_por_dano = 10;
 
 
 	// Use this for initialization
@@ -26,7 +28,13 @@ public class Tiro : NetworkBehaviour {
 			Destroy(gameObject);
 		}
 		if (col.collider.gameObject.tag == "Player") {
-			col.gameObject.GetComponent<Jogador_controle>().vida -= 10;
+			var g = col.gameObject.GetComponent<Jogador_controle>();
+			if(g != null){
+				g.dano(dano);
+
+				//gerente.singleton.GetComponent<gerente>().placar[tiro_id] += pontos_por_dano;//g.add_pontos(pontos_por_dano);
+			}
+			Destroy(gameObject);
 
 
 		}

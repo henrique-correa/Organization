@@ -1,15 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
+using  UnityEngine.UI;
 
 public class Jogador_controle : NetworkBehaviour {
 
 	Vector2 mouse_look;
 	Vector3 dir;
+
+	public int id;
 	public GameObject tiro_spawn;
-	public int vida;
-	public int pontos;
-	public bool maleta;
+
+	[SyncVar]public int vida;
+
+	[SyncVar]public int pontos;
+
+	[SyncVar]public bool maleta;
+
 	public int cor;
 	public float Jogador_cadencia_tiro;
 	float Jogador_proximo_tiro = 0.0f;
@@ -29,9 +36,9 @@ public class Jogador_controle : NetworkBehaviour {
 			return;
 		}
 
-		if (vida <= 0) {
-			Debug.Log ("morreu");
-		}
+		GameObject.Find ("debug_vida").GetComponent<Text> ().text = "vida: " + vida.ToString ();
+		//GameObject.Find ("debug_pontos").GetComponent<Text> ().text = "pontos: " + gerente.singleton.GetComponent<gerente> ().placar [id].ToString ();
+		GameObject.Find ("debug_maleta").GetComponent<Text> ().text = "maleta: " + maleta.ToString ();
 					
 			//WASD move o jogador de acordo com as coordenadas do MUNDO
 			
@@ -62,13 +69,17 @@ public class Jogador_controle : NetworkBehaviour {
 				Debug.Log ("TIRO");
 
 					Cmd_atirar ();
+
+
 			}
 		}
 	}	
 	[Command]
 	void Cmd_atirar(){
 		GameObject t = Instantiate (Resources.Load ("Tiro"), tiro_spawn.transform.position, gameObject.transform.rotation) as GameObject;
-		t.GetComponent<Tiro> ().tiro_id = 1;
+		//NetworkConnection c = netId;
+
+		t.GetComponent<Tiro> ().tiro_id = id; 
 		NetworkServer.Spawn (t);
 
 	}
@@ -77,5 +88,22 @@ public class Jogador_controle : NetworkBehaviour {
 	void OnCollisionEnter2D (Collision2D col){
 
 		Debug.Log ("AAAAAAAA");
+	}
+
+	public void dano (int d){
+		if (!isServer) {
+			return;
+		}
+		vida -= d;
+		if (vida <= 0) {
+			Debug.Log ("morreu");
+		}
+	}
+
+	[Command]
+	public void Cmd_add_pontos(int p){
+
+		pontos += p;
+
 	}
 }
