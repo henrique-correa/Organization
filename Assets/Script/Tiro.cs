@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class Tiro : NetworkBehaviour {
 
-	float vel_tiro = 1.0f;
-	public int tiro_id;
+	public float vel_tiro = 10.0f;
+	public string tiro_id;
 	public int dano = 10;
 	public int pontos_por_dano = 10;
 
@@ -24,19 +25,19 @@ public class Tiro : NetworkBehaviour {
 	}
 
 	void OnCollisionEnter2D (Collision2D col){
+		if (col.collider.gameObject.tag == "parede") {
+			Destroy(gameObject);
+		}
 		if (col.collider.gameObject.tag == "tiro") {
 			Destroy(gameObject);
 		}
-		if (col.collider.gameObject.tag == "Player") {
-			var g = col.gameObject.GetComponent<Jogador_controle>();
-			if(g != null){
-				g.dano(dano);
-
-				//gerente.singleton.GetComponent<gerente>().placar[tiro_id] += pontos_por_dano;//g.add_pontos(pontos_por_dano);
-			}
+		/*if (col.collider.gameObject.tag == "Player") {
+			col.gameObject.GetComponent<Jogador_controle>().dano(dano);
+			GameObject j = GameObject.Find(tiro_id);
+			j.GetComponent<Jogador_controle>().pontos += pontos_por_dano;
 			Destroy(gameObject);
 
 
-		}
+		}*/
 	}
 }

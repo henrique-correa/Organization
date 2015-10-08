@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class MovePlayer : MonoBehaviour {
+public class MovePlayer : NetworkBehaviour {
     Animator animatorCorpo, animatorPernas; // Animator dos objetos Corpo e Pernas;
     GameObject corpo, pernas;
 
@@ -16,6 +17,10 @@ public class MovePlayer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (!isLocalPlayer) {
+			return;
+		}
         if(Input.GetMouseButton(0)){
             // Rotacionar para seguir o mouse;
             animatorCorpo.SetInteger("estado", 1);
