@@ -4,7 +4,7 @@ using  UnityEngine.UI;
 using UnityEngine.Networking;
 
 public class debug_UI : NetworkBehaviour {
-	GameObject[] j_temp = null;
+	//GameObject[] j_temp = null;
 
 	// Use this for initialization
 	void Start () {

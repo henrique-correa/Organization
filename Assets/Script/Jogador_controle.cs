@@ -37,10 +37,12 @@ public class Jogador_controle : NetworkBehaviour {
 	// Use this for initialization
 	void Start () {
 
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		Cmd_SetColor ();
 		if (!isLocalPlayer) {
 			return;
 		}
@@ -187,6 +189,33 @@ public class Jogador_controle : NetworkBehaviour {
 		}
 	}
 
+	[Client]
+	public void Cmd_SetColor(){
+		if (gameObject.name == "Player_1") {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.blue;
+		}
+		if (gameObject.name == "Player_2") {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.red;
+		}
+		if (gameObject.name == "Player_3") {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.green;
+		}
+		if (gameObject.name == "Player_4") {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.yellow;
+		}
+		if (gameObject.name == "Player_5") {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.magenta;
+		}
+		if (gameObject.name == "Player_6") {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.cyan;
+		}
+		if (gameObject.name == "Player_7") {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.white;
+		}
+		if (gameObject.name == "Player_8") {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.black;
+		}
+	}
 
 
 	[Command]
@@ -195,8 +224,6 @@ public class Jogador_controle : NetworkBehaviour {
 			return;
 		}*/
 			pontos += p;
-
-
 	}
 
 	[ClientRpc]
