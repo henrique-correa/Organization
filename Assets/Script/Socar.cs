@@ -15,7 +15,15 @@ public class Socar : NetworkBehaviour {
 	
 	}
 
+
 	void OnCollisionEnter2D (Collision2D col){
+		if (col.gameObject.tag == "Player") {
+
+			col.gameObject.GetComponent<Jogador_controle>().Cmd_Add_dano(15);
+			GameObject.Find(Id_pai).GetComponent<Jogador_controle>().Cmd_add_pontos(20); 
+		}
 
 	}
+
+
 }

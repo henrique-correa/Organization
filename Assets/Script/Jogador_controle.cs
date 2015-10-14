@@ -131,12 +131,24 @@ public class Jogador_controle : NetworkBehaviour {
 		gameObject.transform.FindChild ("Mao").GetComponent<CircleCollider2D> ().enabled = false;//ativar;
 	}
 
-	[Client]
-	void OnCollisionEnter2D (Collision2D col){
 
+	void OnCollisionEnter2D (Collision2D col){
 		if (col.collider.gameObject.tag == "tiro") {
+			col_TIRO(col);
+		}
+
+		//if (col.collider.gameObject.tag == "soco") {
+		//	col_SOCO(col);
+		//}
+
+		//Debug.Log ("AAAAAAAA");
+	}
+
+	[Client]
+	void col_TIRO(Collision2D c){
+
 			//col.gameObject.GetComponent<Tiro>().tiro_id;
-			GameObject j = GameObject.Find (col.gameObject.GetComponent<Tiro>().tiro_id);
+			GameObject j = GameObject.Find (c.gameObject.GetComponent<Tiro>().tiro_id);
 			j.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_dano);
 			Cmd_Add_dano (dano);
 			if(morto == true){
@@ -144,21 +156,22 @@ public class Jogador_controle : NetworkBehaviour {
 				Rpc_respawn();
 				morto = false;
 			}
-			Destroy(col.collider.gameObject);
-		}
-		if (col.collider.gameObject.tag == "soco") {
-			GameObject k = GameObject.Find(col.gameObject.transform.Find("Mao").GetComponent<Socar>().Id_pai);
-			Debug.Log ("colisao do soco " + k.transform.name);
-			k.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_soco);
-			Add_dano2 (dano_soco);
-			if(morto == true){
-				k.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_morte);
-				Rpc_respawn();
-				morto = false;
-			}
-		}
+			Destroy(c.collider.gameObject);
+		
 
-		//Debug.Log ("AAAAAAAA");
+	}
+
+
+	void col_SOCO(Collision2D cl){
+		GameObject k = GameObject.Find(cl.gameObject.transform.Find("Mao").GetComponent<Socar>().Id_pai);
+		Debug.Log ("colisao do soco " + k.transform.name);
+		k.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_soco);
+		Add_dano2 (dano_soco);
+		if(morto == true){
+			k.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_morte);
+			Rpc_respawn();
+			morto = false;
+		}
 	}
 	[Command]
 	public void Cmd_Add_dano (int d){
@@ -176,9 +189,9 @@ public class Jogador_controle : NetworkBehaviour {
 	}
 
 	public void Add_dano2 (int d){
-		/*if (!isServer) {
+		if (!isServer) {
 			return;
-		}*/
+		}
 		vida -= d;
 		if (vida <= 0) {
 			vida = 50;
