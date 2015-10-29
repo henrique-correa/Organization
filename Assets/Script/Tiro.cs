@@ -7,8 +7,8 @@ public class Tiro : NetworkBehaviour {
 
 	public float vel_tiro = 10.0f;
 	public string tiro_id;
-	public int dano = 10;
-	public int pontos_por_dano = 10;
+	//public int dano = 10;
+	//public int pontos_por_dano = 10;
 
 
 	// Use this for initialization

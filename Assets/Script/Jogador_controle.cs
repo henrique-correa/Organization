@@ -8,8 +8,11 @@ public class Jogador_controle : NetworkBehaviour {
 	Vector2 mouse_look;
 	Vector3 dir;
 
-	public int id;
+	[SyncVar]public int id;
 	public GameObject tiro_spawn;
+
+	public GameObject maleta_Ref;
+
 
 	[SyncVar]public int vida;
 
@@ -28,10 +31,24 @@ public class Jogador_controle : NetworkBehaviour {
 	int pontos_por_soco = 20;
 
 	int dano_soco = 15;
+	bool encimaMaleta = false;
 
 	int pontos_por_morte = 50;
 	int dano = 5;
 	bool morto = false;
+
+	public int pontos_maleta_tempo;
+	int pontos_maleta_proximo;
+
+	public Color cor_player;
+
+	bool spawnMaleta = false;
+	//float tempoMaleta = 0.0f;
+	//float proximaMaleta = 30.0f;
+	//int mCount = 0;
+
+	//Vector3 pos2; 
+	float x, y, z;
 
 
 	// Use this for initialization
@@ -42,10 +59,20 @@ public class Jogador_controle : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		//Debug.Log (pos2);
+		if (spawnMaleta == true) {
+			
+			Cmd_respawMaleta();
+			spawnMaleta = false;
+			
+		}
+		//Cmd_cor (cor_player);
 		Cmd_SetColor ();
 		if (!isLocalPlayer) {
 			return;
 		}
+
 
 		GameObject.Find ("debug_vida").GetComponent<Text> ().text = "vida: " + vida.ToString ();
 		GameObject.Find ("debug_pontos").GetComponent<Text> ().text = "pontos: " + pontos.ToString ();
@@ -65,6 +92,23 @@ public class Jogador_controle : NetworkBehaviour {
 			if (Input.GetKey (KeyCode.D)) {
 				transform.Translate (Vector2.right * Time.deltaTime, Space.World);
 			}
+		if (Input.GetKey (KeyCode.E)) {
+			if(encimaMaleta == true){
+				maleta = true;
+			//GameObject m = GameObject.FindGameObjectWithTag("maleta");
+				NetworkServer.Destroy(maleta_Ref);
+			}
+			//transform.Translate (Vector2.right * Time.deltaTime, Space.World);
+		}
+		if (Input.GetKey (KeyCode.Q)) {
+			if(maleta == true){
+				maleta = false;
+				Cmd_respawMaleta();
+			}
+			//GameObject m = GameObject.FindGameObjectWithTag("maleta");
+			//Destroy(m);
+			//transform.Translate (Vector2.right * Time.deltaTime, Space.World);
+		}
 			
 			
 			// rotaciona o jogador em direçao ao mouse
@@ -96,7 +140,7 @@ public class Jogador_controle : NetworkBehaviour {
 				Jogador_proximo_soco = Time.time + Jogador_cadencia_soco;
 				//Debug.Log ("TIRO");
 				
-				Cmd_soco ();
+				Cmd_socar ();
 				
 				
 			}
@@ -106,7 +150,7 @@ public class Jogador_controle : NetworkBehaviour {
 				//Jogador_proximo_soco = Time.time + Jogador_cadencia_soco;
 				//Debug.Log ("TIRO");
 				
-				Cmd_soco2 ();
+				//Cmd_soco2 ();
 				
 				
 			//}
@@ -122,14 +166,37 @@ public class Jogador_controle : NetworkBehaviour {
 
 	}
 
+
+	[Command]
+	void Cmd_socar(){
+		GameObject s = Instantiate (Resources.Load ("Mao_soco"), tiro_spawn.transform.position, gameObject.transform.rotation) as GameObject;
+		//NetworkConnection c = netId;
+		
+		s.GetComponent<Socar> ().Id_pai = gameObject.name; 
+		NetworkServer.Spawn (s);
+		
+	}
+
+
+	[Client]
+	void Cmd_respawMaleta(){
+		if (spawnMaleta == true) {
+			GameObject m = Instantiate (Resources.Load ("maleta"), new Vector3 (x, y, z), Quaternion.identity) as GameObject;
+			NetworkServer.Spawn (m);
+			spawnMaleta = false;
+		}
+
+
+	}
+
 	//[Command]
-	void Cmd_soco(){
+	/*void Cmd_soco(){
 		gameObject.transform.FindChild ("Mao").GetComponent<CircleCollider2D> ().enabled = true;//ativar;
 	}
 
 	void Cmd_soco2(){
 		gameObject.transform.FindChild ("Mao").GetComponent<CircleCollider2D> ().enabled = false;//ativar;
-	}
+	}*/
 
 
 	void OnCollisionEnter2D (Collision2D col){
@@ -137,47 +204,80 @@ public class Jogador_controle : NetworkBehaviour {
 			col_TIRO(col);
 		}
 
-		//if (col.collider.gameObject.tag == "soco") {
-		//	col_SOCO(col);
-		//}
+
+		if (col.collider.gameObject.tag == "soco") {
+			col_SOCO(col);
+		}
 
 		//Debug.Log ("AAAAAAAA");
 	}
 
+	void OnTriggerEnter2D(Collider2D col){
+		encimaMaleta = true;
+		maleta_Ref = col.gameObject;
+			
+
+	}
+	void OnTriggerExit2D(Collider2D col){
+		encimaMaleta = false;
+		
+		
+	}
+
+
 	[Client]
 	void col_TIRO(Collision2D c){
+		if (morto == false) {
 
 			//col.gameObject.GetComponent<Tiro>().tiro_id;
-			GameObject j = GameObject.Find (c.gameObject.GetComponent<Tiro>().tiro_id);
-			j.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_dano);
+			GameObject j = GameObject.Find (c.gameObject.GetComponent<Tiro> ().tiro_id);
+			j.GetComponent<Jogador_controle> ().Cmd_add_pontos (pontos_por_dano);
 			Cmd_Add_dano (dano);
-			if(morto == true){
-				j.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_morte);
-				Rpc_respawn();
-				morto = false;
+			
+			
+			if (morto == true) {
+				
+				j.GetComponent<Jogador_controle> ().Cmd_add_pontos (pontos_por_morte);
+				
+				Rpc_respawn ();
+				//morto = false;
+
+				
 			}
-			Destroy(c.collider.gameObject);
+			Destroy (c.collider.gameObject);
+		}
 		
 
 	}
 
-
+	[Client]
 	void col_SOCO(Collision2D cl){
-		GameObject k = GameObject.Find(cl.gameObject.transform.Find("Mao").GetComponent<Socar>().Id_pai);
-		Debug.Log ("colisao do soco " + k.transform.name);
-		k.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_soco);
-		Add_dano2 (dano_soco);
-		if(morto == true){
-			k.GetComponent<Jogador_controle> ().Cmd_add_pontos(pontos_por_morte);
-			Rpc_respawn();
-			morto = false;
+		if (morto == false) {
+			
+			//col.gameObject.GetComponent<Tiro>().tiro_id;
+			GameObject v = GameObject.Find (cl.gameObject.GetComponent<Socar> ().Id_pai);
+			v.GetComponent<Jogador_controle> ().Cmd_add_pontos (pontos_por_soco);
+			Cmd_Add_dano (dano_soco);
+
+			
+			if (morto == true) {
+				
+				v.GetComponent<Jogador_controle> ().Cmd_add_pontos (pontos_por_morte);
+				
+				Rpc_respawn ();
+				//morto = false;
+				
+				
+			}
+			Destroy (cl.collider.gameObject);
 		}
 	}
+
 	[Command]
 	public void Cmd_Add_dano (int d){
-		if (!isServer) {
-			return;
-		}
+		//if (!isServer) {
+		//	return;
+		//}
 		vida -= d;
 		if (vida <= 0) {
 			vida = 50;
@@ -201,10 +301,29 @@ public class Jogador_controle : NetworkBehaviour {
 			
 		}
 	}
+	/*[Client]
+	public void Cmd_cor(Color c){
+		gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = c;
 
+	}
+	[Client]
+	public void Cmd_set_cor(Color e){
+		cor_player = e;
+		//return cor_player;
+	}*/
 	[Client]
 	public void Cmd_SetColor(){
-		if (gameObject.name == "Player_1") {
+		if (id == 0) {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.blue;
+		}
+		if (id == 1) {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.red;
+		}
+		if (id == 2) {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.green;
+		}
+
+		/*if (gameObject.name == "Player_1") {
 			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.blue;
 		}
 		if (gameObject.name == "Player_2") {
@@ -227,7 +346,7 @@ public class Jogador_controle : NetworkBehaviour {
 		}
 		if (gameObject.name == "Player_8") {
 			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.black;
-		}
+		}*/
 	}
 
 
@@ -242,7 +361,23 @@ public class Jogador_controle : NetworkBehaviour {
 	[ClientRpc]
 	public void Rpc_respawn(){
 		if (isLocalPlayer) {
+			if(maleta == true){
+				//Debug.Log("POS2 antes " + pos2);
+				x = gameObject.transform.position.x;
+				y = gameObject.transform.position.y;
+				z = gameObject.transform.position.z;
+				//Debug.Log("POS2 DEPOIS " + pos2);
+				spawnMaleta = true;
+				maleta = false;
+
+			}
 			gameObject.transform.position = new Vector2(0.0f , 0.0f);
+			morto = false;
+
+
+
+
+
 		}
 
 	}

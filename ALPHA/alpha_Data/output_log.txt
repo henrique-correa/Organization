@@ -1,3 +1,10 @@
+Mono path[0] = 'D:/UnityProj/Mult2/Organization/ALPHA/alpha_Data/Managed'
+Mono path[1] = 'D:/UnityProj/Mult2/Organization/ALPHA/alpha_Data/Mono'
+Mono config path = 'D:/UnityProj/Mult2/Organization/ALPHA/alpha_Data/Mono/etc'
+PlayerConnection initialized from D:/UnityProj/Mult2/Organization/ALPHA/alpha_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55315
+Multi-casting "[IP] 192.168.25.5 [Port] 55315 [Flags] 2 [Guid] 2964780729 [EditorId] 3184033640 [Version] 1048832 [Id] WindowsPlayer(R2D2) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [192.168.25.5:55315]
 Initialize engine version: 5.1.2f1 (afd2369b692a)
 GfxDevice: creating device client; threaded=1
 Direct3D:
@@ -16,18 +23,14 @@ Platform assembly: D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\Unit
 Loading D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
 Loading D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.101 seconds
-desktop: 1360x768 60Hz; virtual: 1360x768 at 0,0
+Platform assembly: D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+- Completed reload, in  0.129 seconds
+desktop: 1360x768 60Hz; virtual: 2384x768 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
 Platform assembly: D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: D:\UnityProj\Mult2\Organization\ALPHA\alpha_Data\Managed\System.dll (this message is harmless)
-Trying to send command for non-local player.
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
-
-Trying to send command for non-local player.
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
-
