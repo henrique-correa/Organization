@@ -29,16 +29,16 @@ public class MovePlayer : NetworkBehaviour {
 		//Debug.Log ("Animaçao PARAM array pos 0: " + anParam [0].name);
 		//transform.FindChild("Corpo").GetComponent<NetworkAnimator> ().SetParameterAutoSend (0, true);
 		//transform.FindChild("Pernas").GetComponent<NetworkAnimator> ().SetParameterAutoSend (0, true);
-		if (!isLocalPlayer) {
+		/*if (!isLocalPlayer) {
 			return;
-		}
+		}*/
 
 
 		Cmd_syncAnim ();
 
 
 	}
-	[Command]
+	//[Command]
 	public void Cmd_syncAnim(){
 		if(Input.GetMouseButton(0)){
 			// Rotacionar para seguir o mouse;

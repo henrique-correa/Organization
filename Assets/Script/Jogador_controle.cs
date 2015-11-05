@@ -8,10 +8,17 @@ public class Jogador_controle : NetworkBehaviour {
 	Vector2 mouse_look;
 	Vector3 dir;
 
+
+	Animator animatorCorpo, animatorPernas; // Animator dos objetos Corpo e Pernas;
+	GameObject corpo, pernas;
+	int nEstado;
+
 	[SyncVar]public int id;
 	public GameObject tiro_spawn;
 
 	public GameObject maleta_Ref;
+
+
 
 
 	[SyncVar]public int vida;
@@ -42,7 +49,7 @@ public class Jogador_controle : NetworkBehaviour {
 
 	public Color cor_player;
 
-	bool spawnMaleta = false;
+	//bool spawnMaleta = false;
 	//float tempoMaleta = 0.0f;
 	//float proximaMaleta = 30.0f;
 	//int mCount = 0;
@@ -53,7 +60,14 @@ public class Jogador_controle : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		corpo = gameObject.transform.FindChild("Corpo").gameObject;
+		pernas = gameObject.transform.FindChild("Pernas").gameObject;
+		animatorCorpo = corpo.GetComponent<Animator>();
+		animatorPernas = pernas.GetComponent<Animator>();
+		/*corpo.GetComponent<NetworkAnimator> ().SetParameterAutoSend (0, true);
+		pernas.GetComponent<NetworkAnimator> ().SetParameterAutoSend (0, true);
+		corpo.GetComponent<NetworkAnimator> ().GetParameterAutoSend (0);
+		pernas.GetComponent<NetworkAnimator> ().GetParameterAutoSend (0);*/
 
 	}
 	
@@ -61,12 +75,12 @@ public class Jogador_controle : NetworkBehaviour {
 	void Update () {
 
 		//Debug.Log (pos2);
-		if (spawnMaleta == true) {
+		/*if (spawnMaleta == true) {
 			
 			Cmd_respawMaleta();
 			spawnMaleta = false;
-			
-		}
+
+		}*/
 		//Cmd_cor (cor_player);
 		Cmd_SetColor ();
 		if (!isLocalPlayer) {
@@ -81,29 +95,62 @@ public class Jogador_controle : NetworkBehaviour {
 			//WASD move o jogador de acordo com as coordenadas do MUNDO
 			
 			if (Input.GetKey (KeyCode.W)) {
-				transform.Translate (Vector2.up * Time.deltaTime, Space.World);
+			transform.Translate (Vector2.up * Time.deltaTime, Space.World);
+			animatorPernas.SetBool ("andando", true);
+			pernas.transform.eulerAngles = new Vector3 (pernas.transform.eulerAngles.x, pernas.transform.eulerAngles.y, 270.0f);
 			}
+			if (Input.GetKeyUp (KeyCode.W)) {
+			animatorPernas.SetBool("andando", false);
+			}
+
+
 			if (Input.GetKey (KeyCode.A)) {
 				transform.Translate (Vector2.left * Time.deltaTime, Space.World);
+				animatorPernas.SetBool("andando", true);
+				pernas.transform.eulerAngles = new Vector3(pernas.transform.eulerAngles.x, pernas.transform.eulerAngles.y, 180.0f);
 			}
+			if (Input.GetKeyUp (KeyCode.A)) {
+			animatorPernas.SetBool("andando", false);
+			}
+
+
 			if (Input.GetKey (KeyCode.S)) {
 				transform.Translate (Vector2.down * Time.deltaTime, Space.World);
+				animatorPernas.SetBool("andando", true);
+				pernas.transform.eulerAngles = new Vector3(pernas.transform.eulerAngles.x, pernas.transform.eulerAngles.y, 90.0f);
 			}
+			if (Input.GetKeyUp (KeyCode.S)) {
+			animatorPernas.SetBool("andando", false);
+			}
+
 			if (Input.GetKey (KeyCode.D)) {
 				transform.Translate (Vector2.right * Time.deltaTime, Space.World);
+				animatorPernas.SetBool("andando", true);
+				pernas.transform.eulerAngles = new Vector3(pernas.transform.eulerAngles.x, pernas.transform.eulerAngles.y, 0.0f);
 			}
-		if (Input.GetKey (KeyCode.E)) {
-			if(encimaMaleta == true){
+			if (Input.GetKeyUp (KeyCode.D)) {
+			animatorPernas.SetBool("andando", false);
+			}
+
+			if (Input.GetKeyDown (KeyCode.E)) {
+				if(encimaMaleta == true){
 				maleta = true;
 			//GameObject m = GameObject.FindGameObjectWithTag("maleta");
-				NetworkServer.Destroy(maleta_Ref);
+				Cmd_MoveMaletaOut();
+				//NetworkServer.Destroy(maleta_Ref);
+			}
+			if(encimaMaleta == false && maleta == true){
+				maleta = false;
+				Cmd_MoveMaletaIn(transform.position);
+
+
 			}
 			//transform.Translate (Vector2.right * Time.deltaTime, Space.World);
 		}
 		if (Input.GetKey (KeyCode.Q)) {
 			if(maleta == true){
-				maleta = false;
-				Cmd_respawMaleta();
+				//maleta = false;
+				//Cmd_respawMaleta();
 			}
 			//GameObject m = GameObject.FindGameObjectWithTag("maleta");
 			//Destroy(m);
@@ -127,35 +174,33 @@ public class Jogador_controle : NetworkBehaviour {
 		if (Input.GetMouseButton (0)) {
 			if (Time.time > Jogador_proximo_tiro) {
 				Jogador_proximo_tiro = Time.time + Jogador_cadencia_tiro;
-				//Debug.Log ("TIRO");
-
-					Cmd_atirar ();
-
-
+				nEstado = 1;
+				animatorCorpo.SetInteger("estado", nEstado);
+				GameObject.FindWithTag ("spawn_tiro").GetComponent<SpriteRenderer> ().enabled = true;
+				Cmd_atirar ();
 			}
+		}
+
+		if (Input.GetMouseButtonUp (0)) {
+			nEstado = 0;
+			animatorCorpo.SetInteger("estado", nEstado);
+			GameObject.FindWithTag ("spawn_tiro").GetComponent<SpriteRenderer> ().enabled = false;
 		}
 
 		if (Input.GetMouseButton (1)) {
 			if (Time.time > Jogador_proximo_soco) {
 				Jogador_proximo_soco = Time.time + Jogador_cadencia_soco;
-				//Debug.Log ("TIRO");
-				
+				nEstado = 2;
+				animatorCorpo.SetInteger("estado", nEstado);
 				Cmd_socar ();
-				
-				
 			}
 		}
 		if (Input.GetMouseButtonUp (1)) {
-			//if (Time.time > Jogador_proximo_soco) {
-				//Jogador_proximo_soco = Time.time + Jogador_cadencia_soco;
-				//Debug.Log ("TIRO");
-				
-				//Cmd_soco2 ();
-				
-				
-			//}
+			nEstado = 0;
+			animatorCorpo.SetInteger("estado", nEstado);
 		}
-	}	
+	}
+
 	[Command]
 	void Cmd_atirar(){
 		GameObject t = Instantiate (Resources.Load ("Tiro"), tiro_spawn.transform.position, gameObject.transform.rotation) as GameObject;
@@ -178,7 +223,7 @@ public class Jogador_controle : NetworkBehaviour {
 	}
 
 
-	[Client]
+	/*[Client]
 	void Cmd_respawMaleta(){
 		if (spawnMaleta == true) {
 			GameObject m = Instantiate (Resources.Load ("maleta"), new Vector3 (x, y, z), Quaternion.identity) as GameObject;
@@ -187,6 +232,16 @@ public class Jogador_controle : NetworkBehaviour {
 		}
 
 
+	}*/
+
+	[Command]
+	void Cmd_MoveMaletaOut(){
+		maleta_Ref.transform.position = new Vector3 (-23.0f, 15.0f, 0.0f);
+	}
+
+	[Command]
+	void Cmd_MoveMaletaIn(Vector3 pos){
+		maleta_Ref.transform.position = pos;
 	}
 
 	//[Command]
@@ -367,8 +422,9 @@ public class Jogador_controle : NetworkBehaviour {
 				y = gameObject.transform.position.y;
 				z = gameObject.transform.position.z;
 				//Debug.Log("POS2 DEPOIS " + pos2);
-				spawnMaleta = true;
+				//spawnMaleta = true;
 				maleta = false;
+				Cmd_MoveMaletaIn(transform.position);
 
 			}
 			gameObject.transform.position = new Vector2(0.0f , 0.0f);

@@ -8,11 +8,11 @@ public class gerente : NetworkManager {
 	bool novoJogo = true;
 
 	void Update(){
-		if (novoJogo == true) {
+		/*if (novoJogo == true) {
 			GameObject m = Instantiate (Resources.Load ("maleta"), new Vector3 (-0.40f, -0.14f, 0.0f), Quaternion.identity) as GameObject;
 			NetworkServer.Spawn (m);
 			novoJogo = false;
-		}
+		}*/
 	}
 
 	public override void OnServerAddPlayer(NetworkConnection con , short playerControllerId){

@@ -1,0 +1,33 @@
+Mono path[0] = 'E:/Mult2/Organization/BETA/beta_Data/Managed'
+Mono path[1] = 'E:/Mult2/Organization/BETA/beta_Data/Mono'
+Mono config path = 'E:/Mult2/Organization/BETA/beta_Data/Mono/etc'
+PlayerConnection initialized from E:/Mult2/Organization/BETA/beta_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55474
+Multi-casting "[IP] 10.209.3.154 [Port] 55474 [Flags] 2 [Guid] 1310090885 [EditorId] 4172500024 [Version] 1048832 [Id] WindowsPlayer(879718-U) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [10.209.3.154:55474]
+Initialize engine version: 5.1.2f1 (afd2369b692a)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 10.1]
+    Renderer: Intel(R) HD Graphics (ID=0x102)
+    Vendor:   Intel
+    VRAM:     128 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: E:\Mult2\Organization\BETA\beta_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading E:\Mult2\Organization\BETA\beta_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: E:\Mult2\Organization\BETA\beta_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading E:\Mult2\Organization\BETA\beta_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: E:\Mult2\Organization\BETA\beta_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading E:\Mult2\Organization\BETA\beta_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: E:\Mult2\Organization\BETA\beta_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading E:\Mult2\Organization\BETA\beta_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: E:\Mult2\Organization\BETA\beta_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading E:\Mult2\Organization\BETA\beta_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.083 seconds
+desktop: 1440x900 60Hz; virtual: 1440x900 at 0,0
+<RI> Initializing input.
+XInput1_3.dll not found. Trying XInput9_1_0.dll instead...
+<RI> Input initialized.
+<RI> Initialized touch support.
+Platform assembly: E:\Mult2\Organization\BETA\beta_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: E:\Mult2\Organization\BETA\beta_Data\Managed\System.dll (this message is harmless)
