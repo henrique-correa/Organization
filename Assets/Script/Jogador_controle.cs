@@ -18,14 +18,23 @@ public class Jogador_controle : NetworkBehaviour {
 
 	public GameObject maleta_Ref;
 
+	public bool podeContar = true;
+	public float contagemMaleta;
+	public float duracaoMaleta;
 
-
+	[SyncVar]public bool jogoFinal;
 
 	[SyncVar]public int vida;
 
 	[SyncVar]public int pontos;
 
 	[SyncVar]public bool maleta;
+
+	public float contagemFinal;
+	//public float tempoFinal;
+	public float duracaoContagem;
+	public bool terminouJogo = false;
+	public bool podeContarMaleta = true;
 
 	public int cor;
 	public float Jogador_cadencia_tiro;
@@ -49,6 +58,9 @@ public class Jogador_controle : NetworkBehaviour {
 
 	public Color cor_player;
 
+	public GameObject gerenteRef;
+	public GameObject m ;
+
 	//bool spawnMaleta = false;
 	//float tempoMaleta = 0.0f;
 	//float proximaMaleta = 30.0f;
@@ -64,15 +76,38 @@ public class Jogador_controle : NetworkBehaviour {
 		pernas = gameObject.transform.FindChild("Pernas").gameObject;
 		animatorCorpo = corpo.GetComponent<Animator>();
 		animatorPernas = pernas.GetComponent<Animator>();
-		/*corpo.GetComponent<NetworkAnimator> ().SetParameterAutoSend (0, true);
+		corpo.GetComponent<NetworkAnimator> ().SetParameterAutoSend (0, true);
 		pernas.GetComponent<NetworkAnimator> ().SetParameterAutoSend (0, true);
-		corpo.GetComponent<NetworkAnimator> ().GetParameterAutoSend (0);
-		pernas.GetComponent<NetworkAnimator> ().GetParameterAutoSend (0);*/
+		gerenteRef = GameObject.Find("Gerente");
+		m = GameObject.FindWithTag("maleta");
+
+		//corpo.GetComponent<NetworkAnimator> ().GetParameterAutoSend (0);
+		//pernas.GetComponent<NetworkAnimator> ().GetParameterAutoSend (0);
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		gerenteRef.GetComponent<gerente> ().Tabela[id].pontosJogador = pontos;
+
+		if (jogoFinal == true) {
+			if (podeContar == true) {
+				contagemFinal = duracaoContagem + Time.time;
+				podeContar = false;
+			}
+			if (contagemFinal <= Time.time) {
+				if(maleta == true && m.GetComponent<Maleta>().verdadeira == true){
+					pontos += 500;
+				}
+				if(maleta == true && m.GetComponent<Maleta>().verdadeira == false){
+					pontos -= 500;
+				}
+				terminouJogo = true;
+				Cmd_FinalizaJogo();
+				Debug.Log ("JOGO ACABOU");
+
+			}
+		}
 
 		//Debug.Log (pos2);
 		/*if (spawnMaleta == true) {
@@ -96,39 +131,91 @@ public class Jogador_controle : NetworkBehaviour {
 			
 			if (Input.GetKey (KeyCode.W)) {
 			transform.Translate (Vector2.up * Time.deltaTime, Space.World);
+			//if(isClient){
+				//Cmd_Anima(true);
+			//}
+			//else if(isServer){
+				ChamaAnima(true);
+			//}
+
 			animatorPernas.SetBool ("andando", true);
+
 			pernas.transform.eulerAngles = new Vector3 (pernas.transform.eulerAngles.x, pernas.transform.eulerAngles.y, 270.0f);
 			}
 			if (Input.GetKeyUp (KeyCode.W)) {
+			//if(isClient){
+				//Cmd_Anima(false);
+			//}
+			//else if(isServer){
+			ChamaAnima(false);
+			//}
 			animatorPernas.SetBool("andando", false);
 			}
 
 
 			if (Input.GetKey (KeyCode.A)) {
 				transform.Translate (Vector2.left * Time.deltaTime, Space.World);
+			//if(isClient){
+				//Cmd_Anima(true);
+			//}
+			//else if(isServer){
+			ChamaAnima(true);
+			//}
 				animatorPernas.SetBool("andando", true);
 				pernas.transform.eulerAngles = new Vector3(pernas.transform.eulerAngles.x, pernas.transform.eulerAngles.y, 180.0f);
 			}
 			if (Input.GetKeyUp (KeyCode.A)) {
 			animatorPernas.SetBool("andando", false);
+			//if(isClient){
+				//Cmd_Anima(false);
+			//}
+			//else if(isServer){
+			ChamaAnima(false);
+			//}
 			}
 
 
 			if (Input.GetKey (KeyCode.S)) {
 				transform.Translate (Vector2.down * Time.deltaTime, Space.World);
 				animatorPernas.SetBool("andando", true);
+			//if(isClient){
+				//Cmd_Anima(true);
+			//}
+			//else if(isServer){
+			ChamaAnima(true);
+			//}
+
 				pernas.transform.eulerAngles = new Vector3(pernas.transform.eulerAngles.x, pernas.transform.eulerAngles.y, 90.0f);
 			}
 			if (Input.GetKeyUp (KeyCode.S)) {
 			animatorPernas.SetBool("andando", false);
+			//if(isClient){
+				//Cmd_Anima(false);
+			//}
+			//else if(isServer){
+			ChamaAnima(false);
+			//}
 			}
 
 			if (Input.GetKey (KeyCode.D)) {
 				transform.Translate (Vector2.right * Time.deltaTime, Space.World);
 				animatorPernas.SetBool("andando", true);
+			//if(isClient){
+				//Cmd_Anima(true);
+			//}
+			//else if(isServer){
+			ChamaAnima(true);
+			//}
+
 				pernas.transform.eulerAngles = new Vector3(pernas.transform.eulerAngles.x, pernas.transform.eulerAngles.y, 0.0f);
 			}
 			if (Input.GetKeyUp (KeyCode.D)) {
+			//if(isClient){
+				//Cmd_Anima(false);
+			//}
+			//else if(isServer){
+			ChamaAnima(false);
+			//}
 			animatorPernas.SetBool("andando", false);
 			}
 
@@ -149,6 +236,23 @@ public class Jogador_controle : NetworkBehaviour {
 		}
 		if (Input.GetKey (KeyCode.Q)) {
 			if(maleta == true){
+				if (podeContarMaleta == true) {
+					contagemMaleta = duracaoMaleta + Time.time;
+					podeContarMaleta = false;
+				}
+				if (contagemMaleta <= Time.time) {
+					GameObject m = GameObject.FindWithTag("maleta");
+					if(m.GetComponent<Maleta>().verdadeira == true){
+						Debug.Log ("Maleta Verdadeira");
+					}
+					else{
+						Debug.Log ("Maleta Falsa");
+					}
+
+
+
+					
+				}
 				//maleta = false;
 				//Cmd_respawMaleta();
 			}
@@ -201,6 +305,26 @@ public class Jogador_controle : NetworkBehaviour {
 		}
 	}
 
+	void ChamaAnima(bool p){
+		if(isServer){
+			Rpc_Anima(p);
+		}
+		if (isClient) {
+			Cmd_Anima(p);
+		}
+
+	}
+
+	[ClientRpc]
+	void Rpc_Anima(bool par){
+		animatorPernas.SetBool("andando", par);
+	}
+
+	[Command]
+	void Cmd_Anima(bool par){
+		animatorPernas.SetBool("andando", par);
+	}
+
 	[Command]
 	void Cmd_atirar(){
 		GameObject t = Instantiate (Resources.Load ("Tiro"), tiro_spawn.transform.position, gameObject.transform.rotation) as GameObject;
@@ -208,6 +332,7 @@ public class Jogador_controle : NetworkBehaviour {
 
 		t.GetComponent<Tiro> ().tiro_id = gameObject.name; 
 		NetworkServer.Spawn (t);
+
 
 	}
 
@@ -233,6 +358,13 @@ public class Jogador_controle : NetworkBehaviour {
 
 
 	}*/
+	//[Command]
+	void Cmd_FinalizaJogo (){
+		GameObject g = GameObject.Find("Gerente");
+		g.GetComponent<gerente> ().jogoFinalizado = true;
+
+	}
+
 
 	[Command]
 	void Cmd_MoveMaletaOut(){
@@ -268,13 +400,27 @@ public class Jogador_controle : NetworkBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D col){
-		encimaMaleta = true;
-		maleta_Ref = col.gameObject;
+		if (col.transform.tag == "maleta") {
+		
+			encimaMaleta = true;
+			maleta_Ref = col.gameObject;
+		}
+		if (col.transform.tag == "elevador") {
+			jogoFinal = true;
+
+		}
 			
 
 	}
 	void OnTriggerExit2D(Collider2D col){
-		encimaMaleta = false;
+		if (col.transform.tag == "maleta") {
+			encimaMaleta = false;
+		}
+
+		if (col.transform.tag == "elevador") {
+			jogoFinal = false;
+			podeContar = true;
+		}
 		
 		
 	}
@@ -377,31 +523,21 @@ public class Jogador_controle : NetworkBehaviour {
 		if (id == 2) {
 			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.green;
 		}
-
-		/*if (gameObject.name == "Player_1") {
-			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.blue;
-		}
-		if (gameObject.name == "Player_2") {
-			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.red;
-		}
-		if (gameObject.name == "Player_3") {
-			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.green;
-		}
-		if (gameObject.name == "Player_4") {
+		if (id == 3) {
 			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.yellow;
 		}
-		if (gameObject.name == "Player_5") {
+		if (id == 4) {
 			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.magenta;
 		}
-		if (gameObject.name == "Player_6") {
+		if (id == 5) {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.black;
+		}
+		if (id == 6) {
+			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.gray;
+		}
+		if (id == 7) {
 			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.cyan;
 		}
-		if (gameObject.name == "Player_7") {
-			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.white;
-		}
-		if (gameObject.name == "Player_8") {
-			gameObject.transform.FindChild("Corpo").GetComponent<SpriteRenderer>().color = Color.black;
-		}*/
 	}
 
 
